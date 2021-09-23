@@ -22,7 +22,7 @@ class CreateUsersTable extends Migration
             $table->string(column: 'codigo_barras');
             $table->string(column: 'email')->unique();
             $table->string(column: 'password');
-            $table->foreign('perfil_id')->references('id_perfil')->on('perfiles');
+            $table->foreign('perfil_id')->references('id_perfil')->on('perfils');
             $table->timestamps();
         });
     }

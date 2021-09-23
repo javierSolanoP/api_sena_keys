@@ -17,7 +17,7 @@ class User extends Authenticatable
         'perfil_id',
         'identificacion',
         'nombre',
-        'apellidos',
+        'apellido',
         'codigo_barras',
         'email',
         'password'

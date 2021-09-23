@@ -10,6 +10,7 @@ class Perfil extends Model
     use HasFactory;
 
     protected $fillable = [
-        'nombre_perfil'
+        'nombre_perfil',
+        'tipo_permiso'
     ];
 }

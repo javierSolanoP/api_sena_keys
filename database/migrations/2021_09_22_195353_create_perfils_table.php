@@ -13,9 +13,10 @@ class CreatePerfilsTable extends Migration
      */
     public function up()
     {
-        Schema::create('perfiles', function (Blueprint $table) {
+        Schema::create('perfils', function (Blueprint $table) {
             $table->id(column: 'id_perfil');
             $table->string(column: 'nombre_perfil', length: 15);
+            $table->string(column: 'tipo_permiso', length: 10);
             $table->timestamps();
         });
     }

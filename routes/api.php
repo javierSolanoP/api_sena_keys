@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\profile_module\API\TestController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -14,6 +15,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+Route::get(uri: '/test/{form}', action: [TestController::class, 'index']);
+Route::post(uri: '/test', action: [TestController::class, 'store']);
+Route::get(uri: '/test/{form}/{data}', action: [TestController::class, 'show']);
+Route::delete(uri: '/test/{form}/{data}', action: [TestController::class, 'destroy']);

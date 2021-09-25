@@ -15,11 +15,11 @@ class CreateAmbientesTable extends Migration
     {
         Schema::create('ambientes', function (Blueprint $table) {
             $table->id(column: 'id_ambiente');
-            $table->unsignedBigInteger(column: 'zona_id');
+            $table->unsignedBigInteger(column: 'zona_id')->nullable();
             $table->string(column: 'nombre_ambiente', length: 100);
             $table->string(column: 'description', length: 100);
             $table->string(column: 'estado', length: 100);
-            $table->foreign('zona_id')->references('id_zona')->on('zonas');
+            $table->foreign('zona_id')->references('id_zona')->on('zonas')->onDelete('set null');
             $table->timestamps();
         });
     }

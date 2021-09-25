@@ -12,4 +12,9 @@ class Zona extends Model
     protected $fillable = [
         'nombre_zona'
     ];
+
+    public function environment()
+    {
+        return $this->hasMany(Ambiente::class, 'id_ambiente');
+    }
 }

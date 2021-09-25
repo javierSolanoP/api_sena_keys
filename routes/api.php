@@ -19,3 +19,7 @@ Route::get(uri: '/test/{form}', action: [TestController::class, 'index']);
 Route::post(uri: '/test', action: [TestController::class, 'store']);
 Route::get(uri: '/test/{form}/{data}', action: [TestController::class, 'show']);
 Route::delete(uri: '/test/{form}/{data}', action: [TestController::class, 'destroy']);
+
+Route::apiResource(name: '/zonas', controller: 'App\Http\Controllers\keys_module\API\ZonaController');
+Route::apiResource(name: '/ambientes', controller: 'App\Http\Controllers\keys_module\API\AmbienteController');
+Route::apiResource(name: '/llaves', controller: 'App\Http\Controllers\keys_module\API\LlaveController');

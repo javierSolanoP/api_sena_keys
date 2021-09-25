@@ -15,4 +15,17 @@ class Ambiente extends Model
         'description',
         'estado'
     ];
+
+    //Relacion uno a muchos : 
+    public function keys()
+    {
+        return $this->hasMany(Llave::class, 'id_llave');
+    }
+
+    //Relacion uno a muchos (Inverse) : 
+    public function zone()
+    {
+        return $this->belongsTo(Zona::class, 'zona', 'id_zona');
+    }
+
 }

@@ -16,9 +16,9 @@ class CreateLlavesTable extends Migration
         Schema::create('llaves', function (Blueprint $table) {
             $table->id(column: 'id_llave');
             $table->unsignedBigInteger(column: 'ambiente_id');
-            $table->string(column: 'codigo_qr');
+            $table->string(column: 'url_codigo_qr');
             $table->string(column: 'codigo_llave', length: 20);
-            $table->foreign('ambiente_id')->references('id_ambiente')->on('ambientes');
+            $table->foreign('ambiente_id')->references('id_ambiente')->on('ambientes')->onDelete('cascade');
             $table->timestamps();
         });
     }

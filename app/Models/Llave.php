@@ -11,7 +11,13 @@ class Llave extends Model
 
     protected $fillable = [
         'ambiente_id',
-        'codigo_qr',
+        'url_codigo_qr',
         'codigo_llave'
     ];
+
+    //Relacion uno a muchos : 
+    public function environments()
+    {
+        return $this->belongsTo(Ambiente::class, 'ambiente', 'id_ambiente');
+    }
 }

@@ -47,7 +47,7 @@ class UserController extends Controller
     )
     {
         //Realizamos la consulta a la DB: 
-        $model = User::where('email', $email);
+        $model = User::where('codigo_barras', $codigo_barras);
 
         //Validamos si existe el usuario en la DB:
         $validateUser = $model->first();
@@ -117,10 +117,10 @@ class UserController extends Controller
     }
 
     //Metodo para retornar un usuario en especifico de la tabla en la DB:
-    public function show($email)
+    public function show($codigo_barras)
     {
         //Realizamos la consulta a la DB: 
-        $model = User::where('email', $email);
+        $model = User::where('codigo_barras', $codigo_barras);
 
         //Validamos que no exista ese usuario en la tabla de la DB: 
         $validateUser = $model->first();
@@ -140,16 +140,16 @@ class UserController extends Controller
     }
 
     //Metodo para actualizar la informacion basica del usuario en especifico de la tabla en la DB:
-    public function update($email)
+    public function update($codigo_barras)
     {
         //
     }
 
     //Metodo para eliminar un usuario en especifico de la tabla en la DB:
-    public function destroy($email)
+    public function destroy($codigo_barras)
     {
         //Realizamos la consulta a la DB: 
-        $model = User::where('email', $email);
+        $model = User::where('codigo_barras', $codigo_barras);
 
         //Validamos que no exista ese usuario en la tabla de la DB: 
         $validateUser = $model->first();

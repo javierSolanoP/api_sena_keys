@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\keys_assignment_module\API;
 
-use App\Models\Ambiente;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-class AmbienteController extends Controller
+class AsignacionLlaveUsuario extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -41,10 +41,10 @@ class AmbienteController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Ambiente  $ambiente
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Ambiente $ambiente)
+    public function show($id)
     {
         //
     }
@@ -52,10 +52,10 @@ class AmbienteController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Ambiente  $ambiente
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(Ambiente $ambiente)
+    public function edit($id)
     {
         //
     }
@@ -64,10 +64,10 @@ class AmbienteController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Ambiente  $ambiente
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Ambiente $ambiente)
+    public function update(Request $request, $id)
     {
         //
     }
@@ -75,10 +75,10 @@ class AmbienteController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Ambiente  $ambiente
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Ambiente $ambiente)
+    public function destroy($id)
     {
         //
     }

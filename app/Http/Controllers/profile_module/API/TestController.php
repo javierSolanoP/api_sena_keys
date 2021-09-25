@@ -61,7 +61,7 @@ class TestController extends Controller
 
             case 'user': 
                 $userController = new UserController;
-                return $userController->show(email: $data);
+                return $userController->show(codigo_barras: $data);
             break;
         }
     }
@@ -77,7 +77,7 @@ class TestController extends Controller
 
             case 'user': 
                 $userController = new UserController;
-                return $userController->destroy(email: $data);
+                return $userController->destroy(codigo_barras: $data);
             break;
         }
     }

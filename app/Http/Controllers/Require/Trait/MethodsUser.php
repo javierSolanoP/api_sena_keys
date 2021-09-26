@@ -68,7 +68,7 @@ trait MethodsUser {
             if(!empty($data->codigo_barras)){
                 
                  //Validamos el campo 'codigo_barras': 
-                if($validate->validateString($data->codigo_barras)){
+                if($validate->validateNumber($data->codigo_barras)){
 
                     $valid['codigo_barras'] = true;
 

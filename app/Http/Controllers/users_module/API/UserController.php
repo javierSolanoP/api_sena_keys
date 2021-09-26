@@ -15,23 +15,20 @@ class UserController extends Controller
     public function index()
     {
         //Realizamos la consulta a la DB: 
-        $model = User::all();
+        $model = User::select('perfil_id as perfil', 'identificacion', 'nombre', 'apellido')->get();
 
-        //Si existen registros, los retornamos: 
-        if($model){
+        //Recorremos cada registro, para hacerle ajustes a la informacion: 
+        foreach($model as $user){
 
-            //Eliminamos el 'hash' del campo password de cada registro, por motivos de seguridad: 
-            foreach($model as $user){
-                unset($user['password']);
-            }
+            //Asignamos el nombre del perfil al que pertenece esa clave foranea 'perfil_id': 
+            $user->perfil = $user->profile->nombre_perfil;
 
-            //Retornamos la respuesta: 
-            return ['query' => true, 'users' => $model];
-
-        }else{
-            //Retornamos el error: 
-            return ['query' => false, 'error' => 'No existen usuarios en el sistema.'];
+            //Eliminamos la demas informacion del perfil que no requiramos: 
+            unset($user->profile);
         }
+
+        //Retornamos una respuesta: 
+        return ['query' => true, 'users' => $model];
     }
 
     //Metodo para registrar un nuevo usuario en la tabla de la DB:
@@ -120,22 +117,26 @@ class UserController extends Controller
     public function show($codigo_barras)
     {
         //Realizamos la consulta a la DB: 
-        $model = User::where('codigo_barras', $codigo_barras);
+        $model = User::select('id_usuario', 'perfil_id as perfil', 'identificacion', 'nombre', 'apellido')->where('codigo_barras', $codigo_barras);
 
-        //Validamos que no exista ese usuario en la tabla de la DB: 
+        //Validamos que exista el usuario en la tabla de la DB: 
         $validateUser = $model->first();
- 
-        //Si existe, retornamos el usuario solicitado: 
+
+        //Si existe, retornamos la informacion del usuario: 
         if($validateUser){
 
-            //Eliminamos el 'hash' del campo password, por motivos de seguridad: 
-            unset($validateUser['password']);
+            //Asignamos el nombre del perfil al que pertenece esa clave foranea 'perfil_id': 
+            $validateUser->perfil = $validateUser->profile->nombre_perfil;
+
+            //Eliminamos la demas informacion del perfil que no requiramos: 
+            unset($validateUser->profile);
+
             //Retornamos la respuesta: 
             return ['query' => true, 'user' => $validateUser];
 
         }else{
-            //Retornamos el error:
-            return ['query' => false, 'error' => 'No existe ese perfil en el sistema.'];
+            //Retornamos el error: 
+            return ['query' => false, 'error' => 'No existe ese usuario en el sistema.'];
         }
     }
 

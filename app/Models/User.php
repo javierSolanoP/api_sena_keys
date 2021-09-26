@@ -22,4 +22,9 @@ class User extends Authenticatable
         'email',
         'password'
     ];
+
+    public function profile()
+    {
+        return $this->belongsTo(Perfil::class, 'perfil', 'id_perfil');
+    }
 }

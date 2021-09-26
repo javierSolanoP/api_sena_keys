@@ -13,4 +13,9 @@ class Perfil extends Model
         'nombre_perfil',
         'tipo_permiso'
     ];
+
+    public function users()
+    {
+        return $this->hasMany(User::class, 'perfil', 'id_perfil');
+    }
 }

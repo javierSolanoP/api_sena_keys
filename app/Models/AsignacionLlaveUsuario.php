@@ -14,6 +14,6 @@ class AsignacionLlaveUsuario extends Model
         'llave_id',
         'entregada_el',
         'en_uso',
-        'regesada_el'
+        'regresada_el'
     ];
 }

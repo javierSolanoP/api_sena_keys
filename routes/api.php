@@ -23,3 +23,5 @@ Route::delete(uri: '/test/{form}/{data}', action: [TestController::class, 'destr
 Route::apiResource(name: '/zonas', controller: 'App\Http\Controllers\keys_module\API\ZonaController');
 Route::apiResource(name: '/ambientes', controller: 'App\Http\Controllers\keys_module\API\AmbienteController');
 Route::apiResource(name: '/llaves', controller: 'App\Http\Controllers\keys_module\API\LlaveController');
+
+Route::apiResource(name: '/asignacion', controller: 'App\Http\Controllers\keys_assignment_module\API\AsignacionLlaveUsuario');

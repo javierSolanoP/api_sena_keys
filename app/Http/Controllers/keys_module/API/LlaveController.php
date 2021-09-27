@@ -71,7 +71,9 @@ class LlaveController extends Controller
                         //El codigo de la llave sera el 'id' del ambiente relacionado con la llave: 
                         $codigo_llave = $ambiente_id.'y'.$ambiente_id.'$'.$ambiente_id.'Q'.$ambiente_id;
 
-                        
+                        //Sino existe el directorio, lo creamos: 
+                        Storage::makeDirectory('/public/codigo_qr');
+
                         //Generamos un 'codigo QR' del campo 'codigo_llave': 
                         QrCode::size(300)->backgroundColor(255,90,0)->errorCorrection('H')->generate($codigo_llave, ".././storage/app/public/codigo_qr/$codigo_llave.svg");
 

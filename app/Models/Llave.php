@@ -20,4 +20,10 @@ class Llave extends Model
     {
         return $this->belongsTo(Ambiente::class, 'ambiente', 'id_ambiente');
     }
+
+    //Relacion uno a muchos : 
+    public function assignment()
+    {
+        return $this->hasMany(AsignacionLlaveUsuario::class, 'asignacion', 'id_llave_usuario');
+    }
 }

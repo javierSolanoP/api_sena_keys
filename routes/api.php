@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\keys_assignment_module\API\AsignacionLlaveUsuario;
 use App\Http\Controllers\profile_module\API\TestController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -25,3 +26,5 @@ Route::apiResource(name: '/ambientes', controller: 'App\Http\Controllers\keys_mo
 Route::apiResource(name: '/llaves', controller: 'App\Http\Controllers\keys_module\API\LlaveController');
 
 Route::apiResource(name: '/asignacion', controller: 'App\Http\Controllers\keys_assignment_module\API\AsignacionLlaveUsuario');
+Route::post(uri: '/update-stock-keys', action: [AsignacionLlaveUsuario::class, 'updateStock']);
+Route::get(uri: '/stock-keys', action: [AsignacionLlaveUsuario::class, 'stock']);

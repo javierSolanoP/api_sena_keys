@@ -16,4 +16,10 @@ class AsignacionLlaveUsuario extends Model
         'en_uso',
         'regresada_el'
     ];
+
+    //Relacion con tabla 'llaves': 
+    public function keys()
+    {
+        return $this->belongsTo(Llave::class, 'llave', 'id_llave'); 
+    }
 }

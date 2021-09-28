@@ -112,13 +112,19 @@ class AmbienteController extends Controller
         $environmentName = strtolower($ambiente); 
 
         //Realizamos la consulta en la DB: 
-        $model = Ambiente::where('nombre_ambiente', $environmentName);
+        $model = Ambiente::select('id_ambiente', 'nombre_ambiente', 'zona_id as zona', 'description')->where('nombre_ambiente', $environmentName);
 
         //Validamos si no existe ese ambiente en la tabla de la DB: 
         $validateEnvironment = $model->first();
 
         //Si existe, validamos el argumento recibido:
         if($validateEnvironment){
+
+            //Cambiamos la clave foranea de 'zona_id', por el nombre de la zona coreesponidente a la clave: 
+            $validateEnvironment->zona = $validateEnvironment->zone->nombre_zona;
+
+            //Eliminamos la demas informacion que no requerimos de la tabla 'llaves': 
+            unset($validateEnvironment->zone);
 
             //Retornamos la respuesta: 
             return ['query' => true, 'environment' => $validateEnvironment];

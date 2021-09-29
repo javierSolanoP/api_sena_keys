@@ -9,6 +9,7 @@ use App\Http\Controllers\users_module\API\UserController;
 use App\Models\AsignacionLlaveUsuario as ModelsAsignacionLlaveUsuario;
 use DateTime;
 use Exception;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -122,7 +123,7 @@ class AsignacionLlaveUsuario extends Controller
             }
 
             //Realizamos la consulta a la tabla de la DB, para validar que no exista una asignacion para esas claves foraneas: 
-            $model = ModelsAsignacionLlaveUsuario::where('usuario_id', $user_id)->where('llave_id', $key_id);
+            $model = ModelsAsignacionLlaveUsuario::where('llave_id', $key_id)->orderBy('entregada_el', 'desc');
 
             //Validamos si no existe esa asignacion en la tabla de la DB: 
             $validateAssignment = $model->first();
@@ -148,7 +149,7 @@ class AsignacionLlaveUsuario extends Controller
 
             }else{
                 //Retornamos el error: 
-                return ['update' => false, 'error' => 'Ya existe esa asignacion en el sistema.'];
+                return ['update' => false, 'error' => 'La llave no esta en uso.'];
             }
 
         }else{
@@ -161,9 +162,20 @@ class AsignacionLlaveUsuario extends Controller
     public function stock()
     {
         //Realizamos la consulta en la tabla de la DB: 
-        $model = ModelsAsignacionLlaveUsuario::select('llave_id as llave',  'en_uso as stock', 'regresada_el')->orderBy('regresada_el', 'desc')->get()->groupBY('llave');
-        return $model;
-        foreach($model as $key){
+        $model = ModelsAsignacionLlaveUsuario::select('llave_id as llave',  'en_uso as stock', 'regresada_el')
+        // ->where('en_uso', 'no')
+        ->orderBy('entregada_el', 'desc')
+        ->get()
+        ->groupBy('llave');
+ 
+        $registers = [];
+
+        for($i = 1; $i <= count($model); $i++){
+
+            $registers["$i"] = $model["$i"][0];
+        }
+        
+        foreach($registers as $key){
             
             //Cambiamos el valor del campo 'llave' por la direccion URL de su 'codigo QR': 
             $key->llave = $key->keys->url_codigo_qr;
@@ -173,17 +185,23 @@ class AsignacionLlaveUsuario extends Controller
             $environmentKey = $keyController->show(codigo_llave: $key->keys->codigo_llave);
             $key['ambiente'] = $environmentKey['key']['ambiente'];
 
-            //Cambiamos el valor del campo 'stock' a 'disponible':
-            $key->stock = 'disponible';
+            //Cambiamos el valor del campo 'stock' a 'disponible' o 'no disponible', segun corresponda:
+            if($key->stock == 'no'){
+                $key->stock = 'disponible';
+            }else{
+                $key->stock = 'no disponible';
+            }
 
+            //Eliminamos el campo 'regresada_el', no es requerido: 
+            unset($key->regresada_el);
 
             //Eliminamos la demas informacion que no requerimos de la tabla 'llaves': 
             unset($key->keys);
-            
+    
         }
 
         //Retornamos la respuesta: 
-        return ['query' => true, 'keys' => $model];
+        return ['query' => true, 'keys' => $registers];
 
     }
 

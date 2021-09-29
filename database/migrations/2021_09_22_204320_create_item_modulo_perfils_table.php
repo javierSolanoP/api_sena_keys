@@ -17,8 +17,8 @@ class CreateItemModuloPerfilsTable extends Migration
             $table->id('id_item_modulo_perfil');
             $table->unsignedBigInteger(column: 'item_modulo_id');
             $table->unsignedBigInteger(column: 'perfi_id');
-            $table->foreign('item_modulo_id')->references('id_item_modulo')->on('item_modulos');
-            $table->foreign('perfi_id')->references('id_perfil')->on('perfils');
+            $table->foreign('item_modulo_id')->references('id_item_modulo')->on('item_modulos')->onDelete('cascade');
+            $table->foreign('perfi_id')->references('id_perfil')->on('perfils')->onDelete('cascade');
             $table->timestamps();
         });
     }

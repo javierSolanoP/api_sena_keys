@@ -3,15 +3,12 @@
 namespace App\Http\Controllers\keys_assignment_module\API;
 
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\keys_module\API\AmbienteController;
 use App\Http\Controllers\keys_module\API\LlaveController;
 use App\Http\Controllers\users_module\API\UserController;
 use App\Models\AsignacionLlaveUsuario as ModelsAsignacionLlaveUsuario;
 use DateTime;
 use Exception;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class AsignacionLlaveUsuario extends Controller
 {

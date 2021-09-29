@@ -13,7 +13,12 @@ class ItemModuloController extends Controller
     // Metodo para retornar todos los modulos de la tabla de la DB:
     public function index()
     {
-        //
+        // Realizamos la consulta a la tabla de la DB: 
+        $model = ModelsItemModulo::select('id_item_modulo', 'item_modulo as modulo', 'url_item_modulo as url', 'icono_item_modulo as icon', 'orden')
+                                ->get();
+
+        // Retornamos una respuesta: 
+        return ['query' => true, 'modules' => $model];
     }
 
     // Metodo para registrar un nuevo modulo en la tabla de la DB: 
@@ -58,7 +63,7 @@ class ItemModuloController extends Controller
                                                   'orden' => $request->input(key: 'orden')]);
 
                         // Retornamos la respuesta: 
-                        return ['register' => true];
+                        return $validateItemModuleData;
 
                     }catch(Exception $e){
                         // Retornamos el error: 
@@ -72,7 +77,7 @@ class ItemModuloController extends Controller
             
             }else{
                 //  Retornamos el error:
-                return ['register' => false, 'error' => 'Ya existe ese item modulo en el sistema.'];
+                return ['register' => false, 'error' => 'Ya existe ese modulo en el sistema.'];
             }
 
         }else{
@@ -82,9 +87,25 @@ class ItemModuloController extends Controller
     }
 
     // Metodo para retornar el registro de un modulo en especifico: 
-    public function show($id)
+    public function show($item_modulo)
     {
-        //
+        // Realizamos la consulta en la tabla de la DB:
+        $model = ModelsItemModulo::select('id_item_modulo', 'item_modulo as modulo', 'url_item_modulo as url', 'icono_item_modulo as icon', 'orden')
+                                ->where('item_modulo', $item_modulo);
+    
+        // Validamos si existe ese item modulo en la tabla de la DB:
+        $validateItemModule = $model->first();
+
+        // Si existe, lo retornamos: 
+        if($validateItemModule){
+
+            //Retornamos la respuesta: 
+            return ['query' => true, 'module'=> $validateItemModule];
+
+        }else{
+            // Retornamos el error: 
+            return ['query' =>  false, 'error' => 'No existe ese modulo en el sistema.'];
+        }
     }
 
     // Metodo para actualizar el registro de un modulo en especifico: 
@@ -129,7 +150,7 @@ class ItemModuloController extends Controller
                                                 'orden' => $request->input(key: 'orden')]);
 
                         // Retornamos la respuesta: 
-                        return ['register' => true];
+                        return $validateItemModuleData;
 
                     }catch(Exception $e){
                         // Retornamos el error: 
@@ -143,7 +164,7 @@ class ItemModuloController extends Controller
             
             }else{
                 //  Retornamos el error:
-                return ['register' => false, 'error' => 'No existe ese item modulo en el sistema.'];
+                return ['register' => false, 'error' => 'No existe ese modulo en el sistema.'];
             }
 
         }else{
@@ -153,8 +174,34 @@ class ItemModuloController extends Controller
     }
 
     // Metodo para eliminar el registro de un modulo en especifico: 
-    public function destroy($id)
+    public function destroy($item_modulo)
     {
-        //
+        // Realizamos la consulta en la tabla de la DB:
+        $model = ModelsItemModulo::select('id_item_modulo', 'item_modulo as modulo', 'url_item_modulo as url', 'icono_item_modulo as icon', 'orden')
+                                ->where('item_modulo', $item_modulo);
+    
+        // Validamos si existe ese item modulo en la tabla de la DB:
+        $validateItemModule = $model->first();
+
+        // Si existe, lo eliminamos: 
+        if($validateItemModule){
+
+            try{
+
+                // Eliminamos el modulo de la tabla de la DB: 
+                $model->delete();
+
+                // Retornamos una respuesta: 
+                return ['delete' => true];
+
+            }catch(Exception $e){
+                // Retornamos el error: 
+                return ['delete' => false, 'error' => $e->getMessage()];
+            }
+
+        }else{
+            // Retornamos el error: 
+            return ['delete' =>  false, 'error' => 'No existe ese modulo en el sistema.'];
+        }
     }
 }

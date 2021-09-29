@@ -29,4 +29,5 @@ Route::apiResource(name: '/asignacion', controller: 'App\Http\Controllers\keys_a
 Route::post(uri: '/update-stock-keys', action: [AsignacionLlaveUsuario::class, 'updateStock']);
 Route::get(uri: '/stock-keys', action: [AsignacionLlaveUsuario::class, 'stock']);
 
-Route::apiResource(name: '/permisos-perfiles', controller: 'App\Http\Controllers\profile_permissions_module\API\ItemModuloController');
+Route::apiResource(name: '/modulos', controller: 'App\Http\Controllers\profile_permissions_module\API\ItemModuloController');
+Route::apiResource(name: '/modulos-perfiles', controller: 'App\Http\Controllers\profile_permissions_module\API\ItemModuloPerfilController');

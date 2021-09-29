@@ -13,12 +13,12 @@ class CreateItemModuloPerfilsTable extends Migration
      */
     public function up()
     {
-        Schema::create('item_modulo_perfiles', function (Blueprint $table) {
+        Schema::create('item_modulo_perfils', function (Blueprint $table) {
             $table->id('id_item_modulo_perfil');
             $table->unsignedBigInteger(column: 'item_modulo_id');
-            $table->unsignedBigInteger(column: 'perfi_id');
+            $table->unsignedBigInteger(column: 'perfil_id');
             $table->foreign('item_modulo_id')->references('id_item_modulo')->on('item_modulos')->onDelete('cascade');
-            $table->foreign('perfi_id')->references('id_perfil')->on('perfils')->onDelete('cascade');
+            $table->foreign('perfil_id')->references('id_perfil')->on('perfils')->onDelete('cascade');
             $table->timestamps();
         });
     }

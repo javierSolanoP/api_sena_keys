@@ -24,7 +24,7 @@ trait MethodsItemModule {
             if(!empty($data->item_module)){
 
                 if($validate->validateNumber($data->item_module)){
-                    // Retornamos la respuesta: 
+                    // Agregamos la propiedad validada al arreglo 'valid': 
                     $valid['item_modulo'] = true;
                 }else{
                     // Retornamos el error: 
@@ -36,7 +36,7 @@ trait MethodsItemModule {
             if(!empty($data->url_item_module)){
 
                 if($validate->validateString($data->url_item_module)){
-                    // Retornamos la respuesta: 
+                    // Agregamos la propiedad validada al arreglo 'valid': 
                     $valid['url_item_modulo'] = true;
                 }else{
                     // Retornamos el error: 
@@ -48,7 +48,7 @@ trait MethodsItemModule {
             if(!empty($data->icono_item_module)){
 
                 if($validate->validateString($data->icono_item_module)){
-                    // Retornamos la respuesta: 
+                    // Agregamos la propiedad validada al arreglo 'valid': 
                     $valid['icono_item_modulo'] = true;
                 }else{
                     // Retornamos el error: 
@@ -60,7 +60,7 @@ trait MethodsItemModule {
             if(!empty($data->orden)){
 
                 if($validate->validateNumber($data->orden)){
-                    // Retornamos la respuesta: 
+                    // Agregamos la propiedad validada al arreglo 'valid': 
                     $valid['orden'] = true;
                 }else{
                     // Retornamos el error: 

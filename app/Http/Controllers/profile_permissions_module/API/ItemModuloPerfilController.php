@@ -8,13 +8,36 @@ use App\Http\Controllers\profile_permissions_module\class\ItemModuloPerfil;
 use App\Models\ItemModuloPerfil as ModelsItemModuloPerfil;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ItemModuloPerfilController extends Controller
 {
     // Metodo para retornar todos los registros de la tabla de la DB:
     public function index()
     {
-        //
+        // Realizamos la consulta a la tabla de la DB: 
+        $model = DB::table(table: 'item_modulo_perfils', as: 'modulo_perfils')
+                
+                // Realizamos la consulta a la tabla del modelo 'Perfil':
+                ->join(table: 'perfils', first: 'modulo_perfils.perfil_id', operator: '=', second: 'perfils.id_perfil')
+                
+                // Realizamos la consulta a la tabla del modelo 'ItemModulo':
+                ->join(table: 'item_modulos', first: 'modulo_perfils.item_modulo_id', operator: '=', second: 'item_modulos.id_item_modulo')
+                
+                //  Seleccionamos los campos que requerimos de todas las tablas: 
+                ->select('modulo_perfils.item_modulo_id as item_modulo', 'perfils.nombre_perfil as perfil', 'modulo_perfils.perfil_id')
+                
+                // Ordenamos la consulta por el campo 'orden' de la tabla del modelo 'ItemModulo': 
+                ->orderBy(column: 'item_modulos.orden', direction: 'asc')
+                
+                // Obtenemos los registros: 
+                ->get()
+
+                // Los agrupamos por el campo 'nombre_perfil' del modelo 'Pefil': 
+                ->groupBy('perfil'); 
+
+        // Retornamos la respuesta: 
+        return ['query' => true, 'module_perfils' => $model];
     }
 
     // Metodo para realizar un nuevo registro en la tabla de la DB: 
@@ -95,9 +118,34 @@ class ItemModuloPerfilController extends Controller
     }
 
     // Metodo para retornar un registro especifico de la tabla de la DB:
-    public function show($id)
+    public function show($id_perfil)
     {
-        //
+        // Realizamos la consulta a la tabla de la DB: 
+        $model = DB::table(table: 'item_modulo_perfils', as: 'modulo_perfils')
+
+                //  Referenciamos el registro especifico: 
+                ->where(column: 'perfil_id', operator: '=', value: $id_perfil)
+                
+                // Realizamos la consulta a la tabla del modelo 'Perfil':
+                ->join(table: 'perfils', first: 'modulo_perfils.perfil_id', operator: '=', second: 'perfils.id_perfil')
+                
+                // Realizamos la consulta a la tabla del modelo 'ItemModulo':
+                ->join(table: 'item_modulos', first: 'modulo_perfils.item_modulo_id', operator: '=', second: 'item_modulos.id_item_modulo')
+                
+                //  Seleccionamos los campos que requerimos de todas las tablas: 
+                ->select('modulo_perfils.item_modulo_id as item_modulo', 'perfils.nombre_perfil as perfil', 'modulo_perfils.perfil_id')
+                
+                // Ordenamos la consulta por el campo 'orden' de la tabla del modelo 'ItemModulo': 
+                ->orderBy(column: 'item_modulos.orden', direction: 'asc')
+                
+                // Obtenemos los registros: 
+                ->get()
+
+                // Los agrupamos por el campo 'nombre_perfil' del modelo 'Pefil': 
+                ->groupBy('perfil'); 
+
+        // Retornamos la respuesta: 
+        return ['query' => true, 'module_perfils' => $model];
     }
 
     // Metodo para actualizar un registro especifico en la tabla de la DB:

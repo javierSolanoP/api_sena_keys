@@ -15,4 +15,10 @@ class ItemModulo extends Model
         'icono_item_modulo',
         'orden'
     ];
+
+    //  Relacion con el modelo 'ItemModuloPerfil': 
+    public function itemModuleProfiles()
+    {
+        return $this->hasMany(ItemModuloPerfil::class, 'item_modulo', 'id_item_modulo');
+    }
 }

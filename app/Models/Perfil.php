@@ -18,4 +18,10 @@ class Perfil extends Model
     {
         return $this->hasMany(User::class, 'perfil', 'id_perfil');
     }
+
+    //  Relacion con el modelo 'ItemModuloPerfil': 
+    public function itemModuleProfiles()
+    {
+        return $this->hasMany(ItemModuloPerfil::class, 'perfil', 'id_perfil');
+    }
 }

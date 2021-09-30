@@ -11,6 +11,7 @@ class Llave extends Model
 
     protected $fillable = [
         'ambiente_id',
+        'imagen_llave',
         'url_codigo_qr',
         'codigo_llave'
     ];

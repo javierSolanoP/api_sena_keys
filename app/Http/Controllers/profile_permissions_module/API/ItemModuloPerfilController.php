@@ -123,7 +123,7 @@ class ItemModuloPerfilController extends Controller
         // Realizamos la consulta a la tabla de la DB: 
         $model = DB::table(table: 'item_modulo_perfils', as: 'modulo_perfils')
 
-                //  Referenciamos el registro especifico: 
+                // Referenciamos el registro especifico: 
                 ->where(column: 'perfil_id', operator: '=', value: $id_perfil)
                 
                 // Realizamos la consulta a la tabla del modelo 'Perfil':

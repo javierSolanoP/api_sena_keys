@@ -15,25 +15,19 @@ class LlaveController extends Controller
     public function index()
     {
         //Realizamos la consulta en la tabla de la DB: 
-        $model = Llave::select('id_llave',  'ambiente_id as ambiente', 'url_codigo_qr')->get();
+        $model = Llave::select('id_llave',  'ambiente_id as ambiente', 'imagen_llave as imagen', 'url_codigo_qr', 'codigo_llave')->get();
 
-        try{
+        foreach($model as $key){
 
-            foreach($model as $key){
+            //Reemplazamos la clave foranea 'ambiente_id', por el valor que contiene el campo 'nombre_ambiente' en la tabla 'ambientes' de la DB: 
+            $key->ambiente = $key->environments->nombre_ambiente;
 
-                //Reemplazamos la clave foranea 'ambiente_id', por el valor que contiene el campo 'nombre_ambiente' en la tabla 'ambientes' de la DB: 
-                $key->ambiente = $key->environments->nombre_ambiente;
-
-                //Luego eliminamos la demas informacion que no utilizaremos de la tabla 'ambientes' de la DB: 
-                unset($key->environments);
-            }
-
-            //Retornamos la respuesta: 
-            return ['query' => true, 'keys' => $model];
-        }catch(Exception $e)
-        {
-            return $e->getMessage();
+            //Luego eliminamos la demas informacion que no utilizaremos de la tabla 'ambientes' de la DB: 
+            unset($key->environments);
         }
+
+        //Retornamos la respuesta: 
+        return ['query' => true, 'keys' => $model];
     }
 
     //Metodo para registrar una nueva llave en la tabla dde la DB: 
@@ -43,7 +37,7 @@ class LlaveController extends Controller
         $nombre_ambiente = strtolower($request->input(key: 'ambiente'));
 
         //Validamos que el argumento no este vacio: 
-        if(!empty($nombre_ambiente)){
+        if(!empty($nombre_ambiente) && !empty($request->file(key: 'imagen_llave'))){
 
             //Instanciamos el controlador del modelo 'Ambiente', para validar que exista el ambiente: 
             $environmentController = new AmbienteController;
@@ -68,6 +62,14 @@ class LlaveController extends Controller
                     //Sino existe, realizamos el nuevo registro:
                     if(!$validateKey){
 
+                        // Validamos que el argumento 'imagen_llave', corresponda a un tipo de archivo 'image':
+                        $request->validate([
+                            'imagen_llave' => 'image'
+                        ]);
+
+                        // Movemos el archivo de la carpeta temporal 'tmp', a la carpeta 'imagen_llaves' y, asignamos la url donde estara accesible la imagen: 
+                        $imagen_llave = Storage::url($request->file(key: 'imagen_llave')->store(path: '/public/imagen_llaves'));
+
                         //El codigo de la llave sera el 'id' del ambiente relacionado con la llave: 
                         $codigo_llave = $ambiente_id.'y'.$ambiente_id.'$'.$ambiente_id.'Q'.$ambiente_id;
 
@@ -82,6 +84,7 @@ class LlaveController extends Controller
 
                         //Realizamos el nuevo registro: 
                         Llave::create(['ambiente_id' => $ambiente_id,
+                                    'imagen_llave' => $imagen_llave,
                                     'url_codigo_qr' => $url_codigo_qr,
                                     'codigo_llave' => $codigo_llave]);
 
@@ -102,7 +105,7 @@ class LlaveController extends Controller
             }
         }else{
             //Retornamos el error: 
-            return ['register' => false, 'error' => 'Campo ambiente: No debe estar vacio.'];
+            return ['register' => false, 'error' => "Campo 'ambiente' o 'imagen_llave': No debe estar vacio."];
         }
     }
 
@@ -110,7 +113,7 @@ class LlaveController extends Controller
     public function show($codigo_llave)
     {
         //Realizamos la consulta en la tabla de la DB: 
-        $model = Llave::select('id_llave', 'ambiente_id as ambiente', 'url_codigo_qr')->where('codigo_llave', $codigo_llave);
+        $model = Llave::select('id_llave', 'ambiente_id as ambiente', 'imagen_llave as imagen', 'url_codigo_qr', 'codigo_llave')->where('codigo_llave', $codigo_llave);
         
         //Validamos si existe esa llave en la tabla de la DB: 
         $validateKey = $model->first();

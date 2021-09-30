@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\keys_assignment_module\API\AsignacionLlaveUsuario;
+use App\Http\Controllers\keys_module\API\LlaveController;
+use App\Http\Controllers\LlaveController as ControllersLlaveController;
 use App\Http\Controllers\profile_module\API\TestController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -31,3 +33,5 @@ Route::get(uri: '/stock-keys', action: [AsignacionLlaveUsuario::class, 'stock'])
 
 Route::apiResource(name: '/modulos', controller: 'App\Http\Controllers\profile_permissions_module\API\ItemModuloController');
 Route::apiResource(name: '/modulos-perfiles', controller: 'App\Http\Controllers\profile_permissions_module\API\ItemModuloPerfilController');
+
+Route::post(uri: '/images-keys', action: [ControllersLlaveController::class, 'store']);

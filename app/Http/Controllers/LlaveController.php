@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Llave;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class LlaveController extends Controller
 {
@@ -35,7 +36,15 @@ class LlaveController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'imagen_llave' => 'image'
+        ]);
+
+       $request->file(key: 'imagen_llave')->store(path: '/public/imagen_llaves');
+
+       $url = Storage::url($request->file(key: 'imagen_llave')->store(path: '/public/imagen_llaves'));
+
+       return $url;
     }
 
     /**

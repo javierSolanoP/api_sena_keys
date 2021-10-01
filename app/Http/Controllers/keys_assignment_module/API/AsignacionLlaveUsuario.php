@@ -248,7 +248,7 @@ class AsignacionLlaveUsuario extends Controller
     // Metodo para retornar las asiganciones de un usuario especifico: 
     public function show($codigo_barras)
     {
-        // Instanciamos el controlador del modelo 'User', para validar que exista el usaurio: 
+        // Instanciamos el controlador del modelo 'User', para validar que exista el usuario: 
         $userController = new UserController; 
 
         // Validamos que exista el usuario: 

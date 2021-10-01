@@ -14,7 +14,7 @@ class ItemModuloController extends Controller
     public function index()
     {
         // Realizamos la consulta a la tabla de la DB: 
-        $model = ModelsItemModulo::select('id_item_modulo', 'item_modulo as modulo', 'url_item_modulo as url', 'icono_item_modulo as icon', 'orden')
+        $model = ModelsItemModulo::select('id_item_modulo', 'nombre_item_modulo as nombre_modulo', 'item_modulo as modulo', 'url_item_modulo as url', 'icono_item_modulo as icon', 'orden')
                                 ->get();
 
         // Retornamos una respuesta: 
@@ -25,13 +25,14 @@ class ItemModuloController extends Controller
     public function store(Request $request)
     {
         //Validamos que los argumentos no esten vacios: 
-        if(!empty($request->input(key: 'item_module')) 
+        if(!empty($request->input(key: 'item_module'))
+            && !empty($request->input(key: 'nombre_item_module'))  
             && !empty($request->input(key: 'url_item_module')) 
             && !empty($request->input(key: 'icono_item_module')) 
             && !empty($request->input(key: 'orden'))){
 
             // Realizamos la consulta a la tabla de la DB:
-            $model = ModelsItemModulo::where('item_modulo', $request->input(key: 'item_module'));
+            $model = ModelsItemModulo::where('nombre_item_modulo', $request->input(key: 'nombre_item_module'));
 
             //  Validamos que no exista ese item modulo en el sistema: 
             $validateItemModule = $model->first();
@@ -41,6 +42,7 @@ class ItemModuloController extends Controller
 
                 // Instanciamos la clase 'ItemModulo', para validar los argumentos recibidos: 
                 $itemModule = new ItemModulo(item_module: $request->input(key: 'item_module'),
+                                            nombre_item_module: $request->input(key: 'nombre_item_module'),
                                             url_item_module: $request->input(key: 'url_item_module'),
                                             icono_item_module: $request->input(key: 'icono_item_module'),
                                             orden: $request->input(key: 'orden'));
@@ -58,6 +60,7 @@ class ItemModuloController extends Controller
 
                         // Realizamos el registro:
                         ModelsItemModulo::create(['item_modulo' => $request->input(key: 'item_module'),
+                                                  'nombre_item_modulo' => $request->input(key: 'nombre_item_module'),
                                                   'url_item_modulo' => $request->input(key: 'url_item_module'),
                                                   'icono_item_modulo' => $request->input(key: 'icono_item_module'),
                                                   'orden' => $request->input(key: 'orden')]);
@@ -82,16 +85,16 @@ class ItemModuloController extends Controller
 
         }else{
             // Retornamos el error: 
-            return ['register' => false, 'error' => "Campo 'item_module' o 'url_item_module' o 'icono_item_module' o 'orden': No deben estar vacios."];
+            return ['register' => false, 'error' => "Campo 'item_module' o 'nombre_item_module' o 'url_item_module' o 'icono_item_module' o 'orden': No deben estar vacios."];
         }
     }
 
     // Metodo para retornar el registro de un modulo en especifico: 
-    public function show($item_modulo)
+    public function show($nombre_modulo)
     {
         // Realizamos la consulta en la tabla de la DB:
-        $model = ModelsItemModulo::select('id_item_modulo', 'item_modulo as modulo', 'url_item_modulo as url', 'icono_item_modulo as icon', 'orden')
-                                ->where('item_modulo', $item_modulo);
+        $model = ModelsItemModulo::select('id_item_modulo', 'nombre_item_modulo as nombre_modulo', 'item_modulo as modulo', 'url_item_modulo as url', 'icono_item_modulo as icon', 'orden')
+                                ->where('nombre_item_modulo', $nombre_modulo);
     
         // Validamos si existe ese item modulo en la tabla de la DB:
         $validateItemModule = $model->first();
@@ -112,13 +115,14 @@ class ItemModuloController extends Controller
     public function update(Request $request)
     {
         //Validamos que los argumentos no esten vacios: 
-        if(!empty($request->input(key: 'item_module')) 
-            && !empty($request->input(key: 'url_item_module')) 
-            && !empty($request->input(key: 'icono_item_module')) 
-            && !empty($request->input(key: 'orden'))){
+        if(!empty($request->input(key: 'new_item_module')) 
+            && !empty($request->input(key: 'nombre_item_module'))  
+            && !empty($request->input(key: 'new_url_item_module')) 
+            && !empty($request->input(key: 'new_icono_item_module')) 
+            && !empty($request->input(key: 'new_orden'))){
 
             // Realizamos la consulta a la tabla de la DB:
-            $model = ModelsItemModulo::where('item_modulo', $request->input(key: 'item_module'));
+            $model = ModelsItemModulo::where('nombre_item_modulo', $request->input(key: 'nombre_item_module'));
 
             //  Validamos que exista ese item modulo en el sistema: 
             $validateItemModule = $model->first();
@@ -127,10 +131,11 @@ class ItemModuloController extends Controller
             if($validateItemModule){
 
                 // Instanciamos la clase 'ItemModulo', para validar los argumentos recibidos: 
-                $itemModule = new ItemModulo(item_module: $request->input(key: 'item_module'),
-                                            url_item_module: $request->input(key: 'url_item_module'),
-                                            icono_item_module: $request->input(key: 'icono_item_module'),
-                                            orden: $request->input(key: 'orden'));
+                $itemModule = new ItemModulo(item_module: $request->input(key: 'new_item_module'),
+                                            nombre_item_module: $request->input(key: 'nombre_item_module'),
+                                            url_item_module: $request->input(key: 'new_url_item_module'),
+                                            icono_item_module: $request->input(key: 'new_icono_item_module'),
+                                            orden: $request->input(key: 'new_orden'));
 
                 // Enviamos la instancia 'itemModule' a la sesion 'item-modulo', con sus propiedades cargadas de datos: 
                 $_SESSION['item-modulo'] = $itemModule;
@@ -144,10 +149,11 @@ class ItemModuloController extends Controller
                     try{
 
                         // Realizamos el registro:
-                        $model->update(['item_modulo' => $request->input(key: 'item_module'),
-                                                'url_item_modulo' => $request->input(key: 'url_item_module'),
-                                                'icono_item_modulo' => $request->input(key: 'icono_item_module'),
-                                                'orden' => $request->input(key: 'orden')]);
+                        $model->update(['item_modulo' => $request->input(key: 'new_item_module'),
+                                        'nombre_item_modulo' => $request->input(key: 'nombre_item_module'),
+                                        'url_item_modulo' => $request->input(key: 'new_url_item_module'),
+                                        'icono_item_modulo' => $request->input(key: 'new_icono_item_module'),
+                                        'orden' => $request->input(key: 'new_orden')]);
 
                         // Retornamos la respuesta: 
                         return $validateItemModuleData;
@@ -159,7 +165,7 @@ class ItemModuloController extends Controller
 
                 }else{
                     // Retornamos el error:
-                    return ['register' => false, 'error' => $validateItemModuleData['error']];
+                    return $validateItemModuleData;
                 }
             
             }else{

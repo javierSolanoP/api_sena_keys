@@ -28,7 +28,19 @@ trait MethodsItemModule {
                     $valid['item_modulo'] = true;
                 }else{
                     // Retornamos el error: 
-                    die('{"register": false, "error" : "Campo item_modulo: Debe ser un caracter de tipo numerico entero."}');
+                    die('{"register" : false, "error" : "Campo item_modulo: Debe ser un caracter de tipo numerico entero."}');
+                }
+            }
+
+            // Metodo para validar el campo 'nombre_item_modulo': 
+            if(!empty($data->nombre_item_module)){
+
+                if($validate->validateString($data->nombre_item_module)){
+                    // Agregamos la propiedad validada al arreglo 'valid': 
+                    $valid['nombre_item_modulo'] = true;
+                }else{
+                    // Retornamos el error: 
+                    die('{"register" : false, "error" : "Campo nombre_item_modulo: No debe contener caracteres alfanumericos."}');
                 }
             }
 
@@ -40,7 +52,7 @@ trait MethodsItemModule {
                     $valid['url_item_modulo'] = true;
                 }else{
                     // Retornamos el error: 
-                    die('{"register": false, "error" : "Campo url_item_modulo: No debe contener caracteres alfanumericos."}');
+                    die('{"register" : false, "error" : "Campo url_item_modulo: No debe contener caracteres alfanumericos."}');
                 }
             }
 
@@ -52,7 +64,7 @@ trait MethodsItemModule {
                     $valid['icono_item_modulo'] = true;
                 }else{
                     // Retornamos el error: 
-                    die('{"register": false, "error" : "Campo icono_item_modulo: No debe contener caracteres alfanumericos."}');
+                    die('{"register" : false, "error" : "Campo icono_item_modulo: No debe contener caracteres alfanumericos."}');
                 }
             }
 
@@ -64,7 +76,7 @@ trait MethodsItemModule {
                     $valid['orden'] = true;
                 }else{
                     // Retornamos el error: 
-                    die('{"register": false, "error" : "Campo orden: Debe ser un caracter de tipo numerico entero."}');
+                    die('{"register" : false, "error" : "Campo orden: Debe ser un caracter de tipo numerico entero."}');
                 }
             }
 

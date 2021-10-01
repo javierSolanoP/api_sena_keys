@@ -7,7 +7,7 @@ use App\Http\Controllers\Require\Trait\MethodsItemModuleProfile;
 class ItemModuloPerfil {
 
     public function __construct(
-        private $item_modulo = '',
+        private $nombre_modulo = '',
         private $perfil = ''
     ){}
 

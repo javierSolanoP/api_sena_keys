@@ -10,7 +10,8 @@ class ItemModulo extends Model
     use HasFactory;
 
     protected $fillable = [
-        'item_modulo', 
+        'item_modulo',
+        'nombre_item_modulo', 
         'url_item_modulo',
         'icono_item_modulo',
         'orden'

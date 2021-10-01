@@ -16,6 +16,7 @@ class CreateItemModulosTable extends Migration
         Schema::create('item_modulos', function (Blueprint $table) {
             $table->id(column: 'id_item_modulo');
             $table->integer(column: 'item_modulo');
+            $table->string(column: 'nombre_item_modulo');
             $table->string(column: 'url_item_modulo');
             $table->string(column: 'icono_item_modulo');
             $table->integer(column: 'orden');

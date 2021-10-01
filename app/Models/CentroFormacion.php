@@ -10,6 +10,11 @@ class CentroFormacion extends Model
     use HasFactory;
 
     protected $fillable = [
-        'nombre'
+        'nombre_centro'
     ];
+
+    public function zonas()
+    {
+        return $this->hasMany(Zona::class, 'centro', 'id_centro');
+    }
 }

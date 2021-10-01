@@ -17,4 +17,8 @@ class Zona extends Model
     {
         return $this->hasMany(Ambiente::class, 'id_ambiente');
     }
+    public function center()
+    {
+        return $this->belongsTo(CentroFormacion::class, 'centro', 'id_centro');
+    }
 }

@@ -13,9 +13,9 @@ class CreateCentroFormacionsTable extends Migration
      */
     public function up()
     {
-        Schema::create('centro_formacion', function (Blueprint $table) {
+        Schema::create('centro_formacions', function (Blueprint $table) {
             $table->id(column: 'id_centro_formacion');
-            $table->string(column: 'nombre');
+            $table->string(column: 'nombre_centro');
             $table->timestamps();
         });
     }

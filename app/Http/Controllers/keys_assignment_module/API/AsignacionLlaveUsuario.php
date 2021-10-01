@@ -9,6 +9,7 @@ use App\Models\AsignacionLlaveUsuario as ModelsAsignacionLlaveUsuario;
 use DateTime;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class AsignacionLlaveUsuario extends Controller
 {
@@ -155,56 +156,134 @@ class AsignacionLlaveUsuario extends Controller
         }
     }
 
-    //Metodo para retornar las llaves que no esten en uso: 
+    // Metodo para retornar las llaves que no esten en uso: 
     public function stock()
     {
-        //Realizamos la consulta en la tabla de la DB: 
-        $model = ModelsAsignacionLlaveUsuario::select('llave_id as llave',  'en_uso as stock', 'regresada_el')
-        // ->where('en_uso', 'no')
-        ->orderBy('entregada_el', 'desc')
-        ->get()
-        ->groupBy('llave');
- 
-        $registers = [];
+        try{
 
-        for($i = 1; $i <= count($model); $i++){
+            // Realizamos la consulta a la tabla de la DB:  
+            $model = DB::table(table: 'asignacion_llave_usuarios', as:'asignacion')
+                        
+                        // Realizamos la consulta a la tabla del modelo 'Llaves':   
+                        ->join(table: 'llaves', first: 'llaves.id_llave', operator: '=', second: 'asignacion.llave_id')
+                        
+                        // Realizamos la consulta a la tabla del modelo 'Ambientes':   
+                        ->join(table: 'ambientes', first: 'ambientes.id_ambiente', operator: '=', second: 'llaves.ambiente_id')
+                        
+                        // Realizamos la consulta a la tabla del modelo 'Zonas':   
+                        ->join(table: 'zonas', first: 'ambientes.zona_id', operator: '=', second: 'zonas.id_zona')
+                        
+                        // Seleccionamos los campos que requerimos de todas las tablas: 
+                        ->select('asignacion.entregada_el as fecha_de_asignacion',  'asignacion.regresada_el as fecha_de_regreso', 'zonas.nombre_zona as zona', 'ambientes.nombre_ambiente', 'ambientes.imagen_ambiente', 'llaves.imagen_llave', 'llaves.url_codigo_qr as codigo_qr', 'llaves.codigo_llave', 'asignacion.en_uso as ocupado')
+                        
+                        // Oredanamos la consulta por el campo 'fecha_asigancion' de manera scendente, para asi obtener el registro de asignacion actual:  
+                        ->orderBy(column: 'fecha_de_asignacion', direction: 'asc')
+                        
+                        // Obtenemos los registros: 
+                        ->get()
 
-            $registers["$i"] = $model["$i"][0];
-        }
-        
-        foreach($registers as $key){
-            
-            //Cambiamos el valor del campo 'llave' por la direccion URL de su 'codigo QR': 
-            $key->llave = $key->keys->url_codigo_qr;
+                        // Agrupamos los registros por el campo 'zona': 
+                        ->groupBy(groupBy: 'zona');
 
-            //Instanciamos el controlador del modelo 'LLave', para extraer el ambiente al que pertenece la llave: 
-            $keyController = new LlaveController;
-            $environmentKey = $keyController->show(codigo_llave: $key->keys->codigo_llave);
-            $key['ambiente'] = $environmentKey['key']['ambiente'];
+            // Declaramos un array para almacenar el primer registro de cada grupo: 
+            $registers = [];
 
-            //Cambiamos el valor del campo 'stock' a 'disponible' o 'no disponible', segun corresponda:
-            if($key->stock == 'no'){
-                $key->stock = 'disponible';
-            }else{
-                $key->stock = 'no disponible';
+            // Iteramos cada grupo para extraer sus respectivos ambientes: 
+            foreach($model as $group){
+
+                // Iteramos cada ambiente para extraer la ultima vez que fue ocupado: 
+                foreach($group as $environment){
+
+                    // Almacenamos el registro en el array declarado:
+                    $registers[$environment->zona][$environment->nombre_ambiente] = $environment;
+                }
+
             }
 
-            //Eliminamos el campo 'regresada_el', no es requerido: 
-            unset($key->regresada_el);
+            // Retornamos la respuesta: 
+            return ['query' => true, 'zones' => $registers];
 
-            //Eliminamos la demas informacion que no requerimos de la tabla 'llaves': 
-            unset($key->keys);
-    
-        }
-
-        //Retornamos la respuesta: 
-        return ['query' => true, 'keys' => $registers];
+        }catch(Exception $e){
+            // Retornamos el error: 
+            return ['query' => false, 'error' => $e->getMessage()];
+        }  
 
     }
 
-    public function show($id)
+    // Metodo para retornar las asiganciones de un usuario especifico: 
+    public function show($codigo_barras)
     {
-        //
+        // Instanciamos el controlador del modelo 'User', para validar que exista el usaurio: 
+        $userController = new UserController; 
+
+        // Validamos que exista el usuario: 
+        $validateUser = $userController->show(codigo_barras: $codigo_barras);
+
+        // Si existe, extraemos su 'id': 
+        if($validateUser['query']){
+
+            // Extraemos su 'id': 
+            $user_id = $validateUser['user']['id_usuario'];
+
+            try{
+                // Realizamos la consulta a la tabla de la DB:  
+                $model = DB::table(table: 'asignacion_llave_usuarios', as:'asignacion')
+
+                            // Consultamos la asignacion requerida: 
+                            ->where(column: 'usuario_id', operator: '=', value: $user_id)
+
+                            // Realizamos la consulta a la tabla del modelo 'Llaves':   
+                            ->join(table: 'llaves', first: 'llaves.id_llave', operator: '=', second: 'asignacion.llave_id')
+
+                            // Realizamos la consulta a la tabla del modelo 'Ambientes':   
+                            ->join(table: 'ambientes', first: 'ambientes.id_ambiente', operator: '=', second: 'llaves.ambiente_id')
+
+                            // Realizamos la consulta a la tabla del modelo 'Zonas':   
+                            ->join(table: 'zonas', first: 'ambientes.zona_id', operator: '=', second: 'zonas.id_zona')
+                            
+                            // Realizamos la consulta a la tabla del modelo 'User':   
+                            ->join(table: 'users', first: 'asignacion.usuario_id', operator: '=', second: 'users.id_usuario')
+
+                            // Seleccionamos los campos que requerimos de todas las tablas: 
+                            ->select('users.codigo_barras as usuario','asignacion.entregada_el as fecha_de_asignacion',  'asignacion.regresada_el as fecha_de_regreso', 'zonas.nombre_zona as zona', 'ambientes.nombre_ambiente', 'ambientes.imagen_ambiente', 'llaves.imagen_llave', 'llaves.url_codigo_qr as codigo_qr', 'llaves.codigo_llave', 'asignacion.en_uso as ocupado')
+
+                            // Oredanamos la consulta por el campo 'fecha_asigancion' de manera scendente, para asi obtener el registro de asignacion actual:  
+                            ->orderBy(column: 'fecha_de_asignacion', direction: 'asc')
+
+                            // Obtenemos los registros: 
+                            ->get()
+
+                            // Agrupamos los registros por el campo 'zona': 
+                            ->groupBy(groupBy: 'zona');
+
+                // Declaramos un array para almacenar el primer registro de cada grupo: 
+                $registers = [];
+
+                // Iteramos cada grupo para extraer sus respectivos ambientes: 
+                foreach($model as $group){
+
+                    // Iteramos cada ambiente para extraer la ultima vez que fue ocupado: 
+                    foreach($group as $environment){
+
+                        // Almacenamos el registro en el array declarado:
+                        $registers[$environment->zona][$environment->nombre_ambiente] = $environment;
+                    }
+
+                }
+
+                // Retornamos la respuesta: 
+                return ['query' => true, 'zones' => $registers];
+
+            }catch(Exception $e){
+                // Retornamos el error: 
+                return ['query' => false, 'error' => $e->getMessage()];
+            }      
+
+        }else{
+            // Retornamos el error: 
+            return ['query' => false, 'error' => $validateUser['error']];
+        }
+
     }
 
     public function destroy($id)

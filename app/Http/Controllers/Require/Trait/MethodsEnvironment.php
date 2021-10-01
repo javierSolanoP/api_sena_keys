@@ -27,11 +27,11 @@ trait MethodsEnvironment {
 
                 }else{
                     //Retornamos el error: 
-                    die('{"register" : false, "error" : "Campo nombre_ambiente: No debe contener caracteres alfanumericos."}');
+                    die('{"error" : "Campo nombre_ambiente: No debe contener caracteres alfanumericos."}');
                 }
             }else{
                 //Retornamos el error: 
-                die('{"register" : false, "error" : "Campo nombre_ambiente: No debe estar vacio."}');
+                die('{"error" : "Campo nombre_ambiente: No debe estar vacio."}');
             }
 
             //Validamos la propiedad 'description':
@@ -43,11 +43,24 @@ trait MethodsEnvironment {
 
                 }else{
                     //Retornamos el error: 
-                    die('{"register" : false, "error" : "Campo description: No debe contener caracteres alfanumericos."}');
+                    die('{"error" : "Campo description: No debe contener caracteres alfanumericos."}');
                 }
             }else{
                 //Retornamos el error: 
-                die('{"register" : false, "error" : "Campo description: No debe estar vacio."}');
+                die('{"error" : "Campo description: No debe estar vacio."}');
+            }
+
+            //Validamos la propiedad 'estado':
+            if(!empty($data->estado)){
+                
+                if($validate->validateString($data->estado)){
+
+                    $valid['estado'] = true;
+
+                }else{
+                    //Retornamos el error: 
+                    die('{"error" : "Campo estado: No debe contener caracteres alfanumericos."}');
+                }
             }
 
             //Retornamos una respuesta: 

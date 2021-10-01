@@ -7,6 +7,7 @@ use App\Http\Controllers\keys_module\class\Ambiente as ClassAmbiente;
 use App\Models\Ambiente;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class AmbienteController extends Controller
 {
@@ -14,7 +15,7 @@ class AmbienteController extends Controller
     public function index()
     {
         //Realizamos la consulta en la DB: 
-        $model = Ambiente::select('id_ambiente', 'zona_id as zona', 'nombre_ambiente')->get();
+        $model = Ambiente::select('id_ambiente', 'zona_id as zona', 'imagen_ambiente', 'nombre_ambiente')->get();
 
         foreach($model as $environment){
             $environment->zona = $environment->zone->nombre_zona;
@@ -33,8 +34,8 @@ class AmbienteController extends Controller
         $nombre_ambiente = strtolower($request->input(key: 'nombre_ambiente'));
         $description     = strtolower($request->input(key: 'description'));
 
-        //Validamos que el argumento 'nombre_zona' no este vacio: 
-        if(!empty($nombre_zona)){
+        //Validamos que el argumento 'nombre_zona'  y 'imagen_ambiente' no esten vacios: 
+        if(!empty($nombre_zona) && !empty($request->file(key: 'imagen_ambiente'))){
             
             //Instanciamos el controlador del modelo 'Zona', para validar que exista la zona: 
             $zoneController = new ZonaController;
@@ -46,63 +47,73 @@ class AmbienteController extends Controller
             if($validateZone['query']){
                 //Extraemos el 'id': 
                 $id_zona = $validateZone['zone']['id_zona'];
+
+                //Realizamos la consulta a la DB: 
+                $model = Ambiente::where('nombre_ambiente', $nombre_ambiente);
+
+                //Validamos que no exista ese ambiente en la tabla de la DB: 
+                $validateEnvironment = $model->first();
+
+                //Sino existe, validamos los argumentos recibidos: 
+                if(!$validateEnvironment){
+
+                    //Instanciamos la clase 'Ambiente', para validar los argumentos recibidos: 
+                    $environment = new ClassAmbiente(nombre_ambiente: $nombre_ambiente,
+                                                    description: $description);
+
+                    //Enviamos la instancia al trait 'MethodsEnvironment', con las propiedades cargadas: 
+                    $_SESSION['register'] = $environment;
+
+                    //Realizamos la validacion: 
+                    $validateData = $environment->registerData();
+
+                    //Si los argumentos son validados correctamente,  realizamos el registro: 
+                    if($validateData){
+
+                        try{
+
+                            // Validamos que el argumento 'imagen_llave', corresponda a un tipo de archivo 'image':
+                            $request->validate([
+                                'imagen_ambiente' => 'image'
+                            ]);
+
+                            // Movemos el archivo de la carpeta temporal 'tmp', a la carpeta 'imagen_llaves' y, asignamos la url donde estara accesible la imagen: 
+                            $imagen_ambiente = Storage::url($request->file(key: 'imagen_ambiente')->store(path: '/public/imagen_ambientes'));
+
+                            //Por defecto, el estado de ambiente sera 'activo': 
+                            static $state = 'activo';
+
+                            //Realizamos el registro: 
+                            Ambiente::create(['zona_id' => $id_zona,
+                                            'imagen_ambiente' => $imagen_ambiente,
+                                            'nombre_ambiente' => $nombre_ambiente,
+                                            'description' => $description,
+                                            'estado' => $state]);
+
+                            //Retornamos la respuesta: 
+                            return ['register' => true];
+
+                        }catch(Exception $e){
+                            //Retornamos el error: 
+                            return ['register' => false, 'error' => $e->getMessage()];
+                        }
+                    }else{
+                        //Retornamos el error: 
+                        return ['register' => false, 'error' => $validateData['error']];
+                    }
+                }else{
+                    //Retornamos el error: 
+                    return ['register' => false, 'error' => 'Ya existe ese ambiente en el sistema.'];
+                }
             }else{
                 //Retornamos el error: 
                 return ['register' => false, 'error' => $validateZone['error']];
             }
         }else{
             //Retornamos el error: 
-            return ['register' => false, 'error' => 'Campo nombre_zona: Debe contener informacion.'];
+            return ['register' => false, 'error' => "Campo 'nombre_zona' o 'imagen_ambiente': Debe contener informacion."];
         }
 
-        //Realizamos la consulta a la DB: 
-        $model = Ambiente::where('nombre_ambiente', $nombre_ambiente);
-
-        //Validamos que no exista ese ambiente en la tabla de la DB: 
-        $validateEnvironment = $model->first();
-
-        //Sino existe, validamos los argumentos recibidos: 
-        if(!$validateEnvironment){
-
-            //Instanciamos la clase 'Ambiente', para validar los argumentos recibidos: 
-            $environment = new ClassAmbiente(nombre_ambiente: $nombre_ambiente,
-                                             description: $description);
-
-            //Enviamos la instancia al trait 'MethodsEnvironment', con las propiedades cargadas: 
-            $_SESSION['register'] = $environment;
-
-            //Realizamos la validacion: 
-            $validateData = $environment->registerData();
-
-            //Si los argumentos son validados correctamente,  realizamos el registro: 
-            if($validateData){
-
-                try{
-
-                    //Por defecto, el estado de ambiente sera 'activo': 
-                    static $state = 'activo';
-
-                    //Realizamos el registro: 
-                    Ambiente::create(['zona_id' => $id_zona,
-                                      'nombre_ambiente' => $nombre_ambiente,
-                                      'description' => $description,
-                                      'estado' => $state]);
-
-                    //Retornamos la respuesta: 
-                    return ['register' => true];
-
-                }catch(Exception $e){
-                    //Retornamos el error: 
-                    return ['register' => false, 'error' => $e->getMessage()];
-                }
-            }else{
-                //Retornamos el error: 
-                return ['register' => false, 'error' => $validateData['error']];
-            }
-        }else{
-            //Retornamos el error: 
-            return ['register' => false, 'error' => 'Ya existe ese ambiente en el sistema.'];
-        }
     }
 
     //Metodo para retornar la informacion de un ambiente especifico:
@@ -112,7 +123,7 @@ class AmbienteController extends Controller
         $environmentName = strtolower($ambiente); 
 
         //Realizamos la consulta en la DB: 
-        $model = Ambiente::select('id_ambiente', 'nombre_ambiente', 'zona_id as zona', 'description')->where('nombre_ambiente', $environmentName);
+        $model = Ambiente::select('id_ambiente', 'imagen_ambiente', 'nombre_ambiente', 'zona_id as zona', 'description')->where('nombre_ambiente', $environmentName);
 
         //Validamos si no existe ese ambiente en la tabla de la DB: 
         $validateEnvironment = $model->first();
@@ -141,54 +152,69 @@ class AmbienteController extends Controller
         $nombre_ambiente     = strtolower($request->input(key: 'nombre_ambiente'));
         $new_nombre_ambiente = strtolower($request->input(key: 'new_nombre_ambiente'));
         $new_description     = strtolower($request->input(key: 'new_description'));
+        $new_estado          = strtolower($request->input(key: 'new_estado'));
 
-        //Realizamos la consulta a la DB: 
-        $model = Ambiente::where('nombre_ambiente', $nombre_ambiente);
+        //Validamos que el argumento 'nombre_zona'  y 'imagen_ambiente' no esten vacios: 
+        if(!empty($nombre_zona) && !empty($request->file(key: 'imagen_ambiente'))){
 
-        //Validamos que exista ese ambiente en la tabla de la DB: 
-        $validateEnvironment = $model->first();
+            //Realizamos la consulta a la DB: 
+            $model = Ambiente::where('nombre_ambiente', $nombre_ambiente);
 
-        //Si existe, validamos los argumentos recibidos: 
-        if($validateEnvironment){
+            //Validamos que exista ese ambiente en la tabla de la DB: 
+            $validateEnvironment = $model->first();
 
-            //Instanciamos la clase 'Ambiente', para validar los argumentos recibidos: 
-            $environment = new ClassAmbiente(nombre_ambiente: $new_nombre_ambiente,
-                                             description: $new_description);
+            //Si existe, validamos los argumentos recibidos: 
+            if($validateEnvironment){
 
-            //Enviamos la instancia al trait 'MethodsEnvironment', con las propiedades cargadas: 
-            $_SESSION['register'] = $environment;
+                //Instanciamos la clase 'Ambiente', para validar los argumentos recibidos: 
+                $environment = new ClassAmbiente(nombre_ambiente: $new_nombre_ambiente,
+                                                description: $new_description);
 
-            //Realizamos la validacion: 
-            $validateData = $environment->updateData();
+                //Enviamos la instancia al trait 'MethodsEnvironment', con las propiedades cargadas: 
+                $_SESSION['register'] = $environment;
 
-            //Si los argumentos son validados correctamente,  realizamos el registro: 
-            if($validateData['register']){
+                //Realizamos la validacion: 
+                $validateData = $environment->updateData();
 
-                try{
+                //Si los argumentos son validados correctamente,  realizamos el registro: 
+                if($validateData['register']){
 
-                    //Por defecto, el estado de ambiente sera 'activo': 
-                    static $state = 'activo';
+                    try{
 
-                    //Realizamos el registro: 
-                    $model->update(['nombre_ambiente' => $new_nombre_ambiente,
-                                    'description' => $new_description,
-                                    'estado' => $state]);
+                        // Validamos que el argumento 'imagen_llave', corresponda a un tipo de archivo 'image':
+                        $request->validate([
+                            'imagen_ambiente' => 'image'
+                        ]);
 
-                    //Retornamos la respuesta: 
-                    return ['register' => true];
+                        // Movemos el archivo de la carpeta temporal 'tmp', a la carpeta 'imagen_llaves' y, asignamos la url donde estara accesible la imagen: 
+                        $imagen_ambiente = Storage::url($request->file(key: 'imagen_ambiente')->store(path: '/public/imagen_ambientes'));
 
-                }catch(Exception $e){
+                        //Realizamos el registro: 
+                        $model->update(['nombre_ambiente' => $new_nombre_ambiente,
+                                        'imagen_ambiente' => $imagen_ambiente,
+                                        'description' => $new_description,
+                                        'estado' => $new_estado]);
+
+                        //Retornamos la respuesta: 
+                        return ['register' => true];
+
+                    }catch(Exception $e){
+                        //Retornamos el error: 
+                        return ['register' => false, 'error' => $e->getMessage()];
+                    }
+                }else{
                     //Retornamos el error: 
-                    return ['register' => false, 'error' => $e->getMessage()];
+                    return ['register' => false, 'error' => $validateData['error']];
                 }
             }else{
                 //Retornamos el error: 
-                return ['register' => false, 'error' => $validateData['error']];
+                return ['register' => false, 'error' => 'No existe ese ambiente en el sistema.'];
             }
         }else{
             //Retornamos el error: 
-            return ['register' => false, 'error' => 'No existe ese ambiente en el sistema.'];
+            return ['register' => false, 'error' => "Campo 'nombre_zona' o 'imagen_ambiente': Debe contener informacion."];
         }
+
     }
 
     //Metodo para eliminar un ambiente especifico: 

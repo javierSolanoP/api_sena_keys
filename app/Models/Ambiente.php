@@ -11,6 +11,7 @@ class Ambiente extends Model
 
     protected $fillable = [
         'zona_id',
+        'imagen_ambiente',
         'nombre_ambiente',
         'description',
         'estado'

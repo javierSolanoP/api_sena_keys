@@ -16,6 +16,7 @@ class CreateAmbientesTable extends Migration
         Schema::create('ambientes', function (Blueprint $table) {
             $table->id(column: 'id_ambiente');
             $table->unsignedBigInteger(column: 'zona_id')->nullable();
+            $table->string(column: 'imagen_ambiente');
             $table->string(column: 'nombre_ambiente', length: 100);
             $table->string(column: 'description', length: 100);
             $table->string(column: 'estado', length: 100);

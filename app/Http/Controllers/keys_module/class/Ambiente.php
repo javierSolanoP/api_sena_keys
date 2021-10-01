@@ -8,7 +8,8 @@ class Ambiente {
 
     public function __construct(
         private $nombre_ambiente,
-        private $description
+        private $description,
+        private $estado = ''
     ){}
 
     //Usamos el trait 'MethodsEnvironment', para validar las propidades: 
